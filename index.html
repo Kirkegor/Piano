@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Навчання гри на піаніно</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Навчання гри на піаніно</h1>
+            <div class="mode-selector">
+                <button class="btn btn--primary mode-btn" data-mode="free">Вільна гра</button>
+                <button class="btn btn--outline mode-btn" data-mode="learning">Навчання</button>
+            </div>
+        </header>
+
+        <main>
+            <!-- Piano Keyboard -->
+            <div class="piano-container">
+                <div class="piano-keyboard" id="piano">
+                    <!-- White keys -->
+                    <div class="key white-key" data-note="C" data-key="A">
+                        <span class="note-label">C</span>
+                        <span class="key-label">A</span>
+                    </div>
+                    <div class="key white-key" data-note="D" data-key="D">
+                        <span class="note-label">D</span>
+                        <span class="key-label">D</span>
+                    </div>
+                    <div class="key white-key" data-note="E" data-key="G">
+                        <span class="note-label">E</span>
+                        <span class="key-label">G</span>
+                    </div>
+                    <div class="key white-key" data-note="F" data-key="H">
+                        <span class="note-label">F</span>
+                        <span class="key-label">H</span>
+                    </div>
+                    <div class="key white-key" data-note="G" data-key="K">
+                        <span class="note-label">G</span>
+                        <span class="key-label">K</span>
+                    </div>
+                    <div class="key white-key" data-note="A" data-key=";">
+                        <span class="note-label">A</span>
+                        <span class="key-label">;</span>
+                    </div>
+                    <div class="key white-key" data-note="B" data-key="Enter">
+                        <span class="note-label">B</span>
+                        <span class="key-label">↵</span>
+                    </div>
+                    
+                    <!-- Black keys -->
+                    <div class="key black-key" data-note="C#" data-key="S" style="left: 8.5%;">
+                        <span class="note-label">C#</span>
+                        <span class="key-label">S</span>
+                    </div>
+                    <div class="key black-key" data-note="D#" data-key="F" style="left: 22.5%;">
+                        <span class="note-label">D#</span>
+                        <span class="key-label">F</span>
+                    </div>
+                    <div class="key black-key" data-note="F#" data-key="J" style="left: 51%;">
+                        <span class="note-label">F#</span>
+                        <span class="key-label">J</span>
+                    </div>
+                    <div class="key black-key" data-note="G#" data-key="L" style="left: 65%;">
+                        <span class="note-label">G#</span>
+                        <span class="key-label">L</span>
+                    </div>
+                    <div class="key black-key" data-note="A#" data-key="'" style="left: 79%;">
+                        <span class="note-label">A#</span>
+                        <span class="key-label">'</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Free Play Mode -->
+            <div class="mode-panel" id="free-mode">
+                <div class="card">
+                    <div class="card__body">
+                        <h2>Режим вільної гри</h2>
+                        <p>Натискайте на клавіші мишкою або використовуйте клавіатуру комп'ютера</p>
+                        
+                        <div class="controls">
+                            <div class="volume-control">
+                                <label class="form-label" for="volume">Гучність:</label>
+                                <input type="range" id="volume" class="volume-slider" min="0" max="100" value="50">
+                                <span id="volume-value">50%</span>
+                            </div>
+                            <button class="btn btn--secondary" id="sound-toggle">🔊 Звук увімкнено</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Learning Mode -->
+            <div class="mode-panel hidden" id="learning-mode">
+                <div class="card">
+                    <div class="card__body">
+                        <h2>Режим навчання</h2>
+                        
+                        <div class="melody-selection" id="melody-selection">
+                            <h3>Виберіть мелодію для вивчення:</h3>
+                            <div class="melody-list">
+                                <button class="btn btn--outline melody-btn" data-melody="0">Twinkle Twinkle Little Star</button>
+                                <button class="btn btn--outline melody-btn" data-melody="1">Mary Had a Little Lamb</button>
+                                <button class="btn btn--outline melody-btn" data-melody="2">Happy Birthday</button>
+                                <button class="btn btn--outline melody-btn" data-melody="3">Old MacDonald</button>
+                                <button class="btn btn--outline melody-btn" data-melody="4">Row Row Row Your Boat</button>
+                            </div>
+                        </div>
+
+                        <div class="learning-panel hidden" id="learning-panel">
+                            <div class="melody-info">
+                                <h3 id="current-melody-name">Назва мелодії</h3>
+                                <div class="progress-indicator">
+                                    <span>Етап <span id="current-stage">1</span> з <span id="total-stages">4</span></span>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" id="progress-fill"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="stage-info">
+                                <p>Поточні ноти: <span id="current-notes" class="current-notes"></span></p>
+                            </div>
+
+                            <div class="learning-controls">
+                                <button class="btn btn--primary" id="play-stage">▶ Програти етап</button>
+                                <button class="btn btn--secondary" id="next-stage" disabled>Наступний етап</button>
+                                <button class="btn btn--outline" id="restart-melody">Почати спочатку</button>
+                                <button class="btn btn--outline" id="back-to-selection">← Назад до списку</button>
+                            </div>
+
+                            <div class="feedback" id="feedback"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
