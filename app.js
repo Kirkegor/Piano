@@ -37,7 +37,7 @@ class PianoLearningApp {
             {"name": "Hot Cross Buns", "steps": [["E","D","C"], ["E","D","C"], ["C","C","C","C"], ["E","D","C"]]},
             {"name": "Three Blind Mice", "steps": [["E","D","C"], ["E","D","C"], ["G","F#","F#","E"], ["G","F#","F#","E"]]},
             {"name": "Itsy Bitsy Spider", "steps": [["G","C","C","C"], ["D","E","E","E"], ["D","C","D","E"], ["C"]]},
-            {"name": "Мишка Косолапый", "steps": [["C","D","E","F"], ["G","G"], ["F","E","D"], ["C"]]},
+            {"name": "Мишка Косолапий", "steps": [["C","D","E","F"], ["G","G"], ["F","E","D"], ["C"]]},
             {"name": "Калинка", "steps": [["E","E","E","E"], ["D","C"], ["D","D","D","D"], ["C","B"]]},
             {"name": "АРАМ ЗАМ ЗАМ", "steps": [["C","C","D","E"], ["F","F"], ["E","D"], ["C"]]},
             {"name": "Ладушки", "steps": [["C","D","E","F"], ["G"], ["G","F","E","D"], ["C"]]},
@@ -46,50 +46,87 @@ class PianoLearningApp {
     }
     
     async init() {
+        console.log('Initializing Piano Learning App...');
         await this.initAudio();
-        this.populateMelodySelect(); // Move this before setupEventListeners
+        
+        // Wait for DOM to be fully ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                this.setupApp();
+            });
+        } else {
+            this.setupApp();
+        }
+    }
+    
+    setupApp() {
+        console.log('Setting up app...');
+        this.populateMelodySelect();
         this.setupEventListeners();
         this.updateVolumeDisplay();
+        console.log('App setup complete');
     }
     
     async initAudio() {
         try {
             this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            console.log('Audio context initialized');
         } catch (error) {
             console.error('Audio context initialization failed:', error);
         }
     }
     
     populateMelodySelect() {
+        console.log('Populating melody select...');
         const select = document.getElementById('melodySelect');
         if (!select) {
             console.error('Melody select element not found');
             return;
         }
         
+        console.log('Found melody select element:', select);
+        
         // Clear existing options except the first one
-        while (select.children.length > 1) {
-            select.removeChild(select.lastChild);
+        const firstOption = select.querySelector('option');
+        select.innerHTML = '';
+        if (firstOption) {
+            select.appendChild(firstOption);
+        } else {
+            // Create default option if it doesn't exist
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = '-- Оберіть мелодію --';
+            select.appendChild(defaultOption);
         }
         
         // Add melody options
         this.melodies.forEach((melody, index) => {
             const option = document.createElement('option');
-            option.value = index;
+            option.value = index.toString();
             option.textContent = melody.name;
             select.appendChild(option);
+            console.log(`Added melody: ${melody.name}`);
         });
         
-        console.log(`Added ${this.melodies.length} melodies to select`);
+        console.log(`Successfully added ${this.melodies.length} melodies to select`);
+        console.log('Total options in select:', select.options.length);
     }
     
     setupEventListeners() {
+        console.log('Setting up event listeners...');
+        
         // Mode switching
         const freePlayBtn = document.getElementById('freePlayBtn');
         const learningBtn = document.getElementById('learningBtn');
         
-        if (freePlayBtn) freePlayBtn.addEventListener('click', () => this.switchMode('freePlay'));
-        if (learningBtn) learningBtn.addEventListener('click', () => this.switchMode('learning'));
+        if (freePlayBtn) {
+            freePlayBtn.addEventListener('click', () => this.switchMode('freePlay'));
+            console.log('Free play button listener added');
+        }
+        if (learningBtn) {
+            learningBtn.addEventListener('click', () => this.switchMode('learning'));
+            console.log('Learning button listener added');
+        }
         
         // Volume controls
         const volumeSlider = document.getElementById('volumeSlider');
@@ -100,12 +137,19 @@ class PianoLearningApp {
                 this.volume = parseInt(e.target.value) / 100 * 0.8; // Max volume 0.8 for increased loudness
                 this.updateVolumeDisplay();
             });
+            console.log('Volume slider listener added');
         }
         
-        if (muteBtn) muteBtn.addEventListener('click', () => this.toggleMute());
+        if (muteBtn) {
+            muteBtn.addEventListener('click', () => this.toggleMute());
+            console.log('Mute button listener added');
+        }
         
         // Piano keys - mouse events
-        document.querySelectorAll('.white-key, .black-key').forEach(key => {
+        const keys = document.querySelectorAll('.white-key, .black-key');
+        console.log(`Found ${keys.length} piano keys`);
+        
+        keys.forEach(key => {
             key.addEventListener('mousedown', (e) => {
                 e.preventDefault();
                 this.playNote(e.target.dataset.note);
@@ -122,6 +166,7 @@ class PianoLearningApp {
         // Keyboard events
         document.addEventListener('keydown', (e) => this.handleKeyDown(e));
         document.addEventListener('keyup', (e) => this.handleKeyUp(e));
+        console.log('Keyboard listeners added');
         
         // Learning mode controls
         const melodySelect = document.getElementById('melodySelect');
@@ -129,13 +174,31 @@ class PianoLearningApp {
         const repeatStepBtn = document.getElementById('repeatStepBtn');
         const nextStepBtn = document.getElementById('nextStepBtn');
         
-        if (melodySelect) melodySelect.addEventListener('change', (e) => this.selectMelody(e.target.value));
-        if (playDemoBtn) playDemoBtn.addEventListener('click', () => this.playDemo());
-        if (repeatStepBtn) repeatStepBtn.addEventListener('click', () => this.repeatStep());
-        if (nextStepBtn) nextStepBtn.addEventListener('click', () => this.nextStep());
+        if (melodySelect) {
+            melodySelect.addEventListener('change', (e) => {
+                console.log('Melody selected:', e.target.value);
+                this.selectMelody(e.target.value);
+            });
+            console.log('Melody select listener added');
+        }
+        if (playDemoBtn) {
+            playDemoBtn.addEventListener('click', () => this.playDemo());
+            console.log('Play demo button listener added');
+        }
+        if (repeatStepBtn) {
+            repeatStepBtn.addEventListener('click', () => this.repeatStep());
+            console.log('Repeat step button listener added');
+        }
+        if (nextStepBtn) {
+            nextStepBtn.addEventListener('click', () => this.nextStep());
+            console.log('Next step button listener added');
+        }
+        
+        console.log('Event listeners setup complete');
     }
     
     switchMode(mode) {
+        console.log('Switching to mode:', mode);
         this.currentMode = mode;
         
         // Update button states
@@ -242,6 +305,8 @@ class PianoLearningApp {
     }
     
     selectMelody(index) {
+        console.log('Selecting melody with index:', index);
+        
         if (index === '' || index === null || index === undefined) {
             this.resetLearning();
             return;
@@ -257,6 +322,8 @@ class PianoLearningApp {
         this.currentStep = 0;
         this.userInput = [];
         this.isLearningActive = false;
+        
+        console.log('Selected melody:', this.currentMelody.name);
         
         const learningContent = document.getElementById('learningContent');
         const currentMelody = document.getElementById('currentMelody');
